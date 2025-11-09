@@ -1,0 +1,108 @@
+#include <ESP32Servo.h>
+
+Servo myservo;
+int ServoPin = 1;
+#define TRIG_PIN 2
+#define ECHO_PIN 5
+#define LED_PIN_R 4
+#define LED_PIN_G 15  
+#define TRIG2_PIN 22
+#define ECHO2_PIN 21
+
+
+void setup() {
+  Serial.begin(115200);
+  myservo.attach(ServoPin);
+  myservo.write(90);
+  Serial.println("servo initaizd at 0");
+  pinMode(TRIG_PIN, OUTPUT);
+  pinMode(ECHO_PIN, INPUT);
+  pinMode(LED_PIN_G, OUTPUT);
+  pinMode(LED_PIN_R, OUTPUT);
+  pinMode(TRIG2_PIN, OUTPUT);
+  pinMode(ECHO2_PIN, INPUT);
+  digitalWrite(LED_PIN_G, HIGH);
+
+}
+void loop() {
+static int open = 1;
+static int s1=0;
+static int s2=0;
+digitalWrite(TRIG_PIN, LOW);
+delayMicroseconds(2);
+digitalWrite(TRIG_PIN, HIGH);
+delayMicroseconds(10);
+digitalWrite(TRIG_PIN, LOW);
+long duration = pulseIn (ECHO_PIN, HIGH);
+float distance = duration / 58.0;
+
+digitalWrite(TRIG2_PIN, LOW);
+delayMicroseconds(2);
+digitalWrite(TRIG2_PIN, HIGH);
+delayMicroseconds(10);
+digitalWrite(TRIG2_PIN, LOW);
+long duration2 = pulseIn (ECHO2_PIN, HIGH);
+float distance2 = duration2 / 58.0;
+// float distance2 = 55;
+Serial.print("Distance: ");
+Serial.print(distance);
+Serial.print(" cm");
+
+Serial.print(" Distance2: ");
+Serial.print(distance2);
+Serial.print(" cm\n");
+
+if (distance < 10 && distance > 0 && s1==0) {
+  if (open == 1) {
+  digitalWrite(LED_PIN_R, HIGH);
+  digitalWrite(LED_PIN_G, LOW);
+  for (int pos = 90; pos >= 0; pos -= 10) {
+      myservo.write(pos);
+      Serial.println(pos);
+      delay(200);
+  }
+  open=0;
+  } else {
+   
+    for (int pos = 0; pos <= 90; pos += 10) {
+    myservo.write(pos);
+    Serial.println(pos);
+    delay(200);
+  }
+  digitalWrite(LED_PIN_G, HIGH);
+  digitalWrite(LED_PIN_R, LOW);
+  open = 1;
+  }
+  s1=1;
+  s2=0;
+
+
+
+} else if (distance2 < 10 && distance2 > 0 && s2==0) {
+  if (open == 1) {
+  digitalWrite(LED_PIN_R, HIGH);
+  digitalWrite(LED_PIN_G, LOW);
+  for (int pos = 90; pos >= 0; pos -= 10) {
+      myservo.write(pos);
+      Serial.println(pos);
+      delay(200);
+  }
+  open=0;
+  } else {
+   
+    for (int pos = 0; pos <= 90; pos += 10) {
+    myservo.write(pos);
+    Serial.println(pos);
+    delay(200);
+  }
+  digitalWrite(LED_PIN_G, HIGH);
+  digitalWrite(LED_PIN_R, LOW);
+  open = 1;
+  }
+  s2=1;
+  s1=0;
+}
+
+delay(100);
+}
+ 
